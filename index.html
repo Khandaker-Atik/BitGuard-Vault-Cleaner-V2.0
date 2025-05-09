@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BitGuard Vault Cleaner</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+</head>
+<body>
+    <div class="background-animation"></div>
+    
+    <header>
+        <div class="logo-container">
+            <i class="fas fa-shield-alt"></i>
+            <h1>BitGuard Vault Cleaner</h1>
+        </div>
+        <p class="tagline">Eliminate duplicates. Organize your passwords.</p>
+    </header>
+
+    <main class="container animate__animated animate__fadeIn">
+
+        <section class="input-section">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-file-import"></i>
+                    <h2>Paste Your Bitwarden JSON</h2>
+                </div>
+                <div class="card-content">
+                    <div class="textarea-container">
+                        <textarea id="jsonInput" placeholder='PASTE YOUR BITWARDEN JSON HERE...
+Example:
+
+{
+    "encrypted": false,
+    "folders": [],
+    "items": [
+        {
+            "passwordHistory": null,
+            "revisionDate": "2024-09-23T22:01:36.262Z",
+            "creationDate": "2024-09-23T22:01:36.262Z",
+            "deletedDate": null,
+            "id": "example-id-1",
+            "organizationId": null,
+            "folderId": null,
+            "type": 1,
+            "reprompt": 0,
+            "name": "www.example.com",
+            "login": {
+                "username": "user1",
+                "password": "password1"
+            }
+        },
+        {
+            "passwordHistory": null,
+            "revisionDate": "2024-09-24T15:58:54.337Z",
+            "creationDate": "2024-09-24T15:58:54.337Z",
+            "deletedDate": null,
+            "id": "example-id-2",
+            "organizationId": null,
+            "folderId": null,
+            "type": 1,
+            "reprompt": 0,
+            "name": "www.example.com",
+            "login": {
+                "username": "user1",
+                "password": "password2"
+            }
+        }
+    ]
+}
+'></textarea>
+                    </div>
+                    <div class="button-group">
+                        <button id="processBtn" class="btn primary-btn" onclick="processJSON()">
+                            <i class="fas fa-cogs"></i> Process JSON
+                        </button>
+                        <button id="clearBtn" class="btn secondary-btn" onclick="clearAll()">
+                            <i class="fas fa-trash-alt"></i> Clear All
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="output-section">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-file-export"></i>
+                    <h2>Processed JSON</h2>
+                    <div class="stats" id="stats">
+                        <div class="stat-item">
+                            <div class="stat-label">Original Items</div>
+                            <div class="stat-value" id="originalCount">0</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Duplicates Removed</div>
+                            <div class="stat-value" id="duplicatesCount">0</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Final Items</div>
+                            <div class="stat-value" id="finalCount">0</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="textarea-container">
+                        <textarea id="jsonOutput" readonly></textarea>
+                    </div>
+                    <div class="button-group">
+                        <button id="downloadBtn" class="btn primary-btn" onclick="downloadJSON()" disabled>
+                            <i class="fas fa-download"></i> Download Processed JSON
+                        </button>
+                        <button id="copyBtn" class="btn secondary-btn" onclick="copyToClipboard()" disabled>
+                            <i class="fas fa-copy"></i> Copy to Clipboard
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="intro-section">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-info-circle"></i>
+                    <h2>What This Tool Does</h2>
+                </div>
+                <div class="card-content">
+                    <p>This tool helps you clean up your Bitwarden vault by removing duplicate password entries with the same website name and username, keeping only the most recent one.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="instructions-section">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-list-ol"></i>
+                    <h2>Instructions</h2>
+                </div>
+                <div class="card-content">
+                    <ol>
+                        <li><span class="step-number">1</span> <span class="step-text">Export your passwords from Bitwarden in JSON format (<a href="https://bitwarden.com/help/export-your-data/" target="_blank">help</a> | <a href="https://vault.bitwarden.com/#/tools/export" target="_blank">direct link</a>)</span></li>
+                        <li><span class="step-number">2</span> <span class="step-text">Copy all the content from the downloaded file and paste it below</span></li>
+                        <li><span class="step-number">3</span> <span class="step-text">Click "Process JSON" to remove duplicates</span></li>
+                        <li><span class="step-number">4</span> <span class="step-text">Download the processed file using the button below</span></li>
+                        <li><span class="step-number">5</span> <span class="step-text">Clear your Bitwarden Vault (<a href="https://vault.bitwarden.com/#/settings/account" target="_blank">direct link</a>)</span></li>
+                        <li><span class="step-number">6</span> <span class="step-text">Import the new passwords (<a href="https://bitwarden.com/help/import-data/" target="_blank">help</a> | <a href="https://vault.bitwarden.com/#/tools/import" target="_blank">direct link</a>) choosing file format <b>Bitwarden (json)</b></span></li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="social-links">
+                <a href="https://khandaker-atik.vercel.app/" target="_blank" title="Portfolio">
+                    <i class="fas fa-globe"></i>
+                </a>
+                <a href="https://github.com/khandaker-atik" target="_blank" title="GitHub">
+                    <i class="fab fa-github"></i>
+                </a>
+                <a href="https://linkedin.com/in/atikur-rahman007" target="_blank" title="LinkedIn">
+                    <i class="fab fa-linkedin"></i>
+                </a>
+                <a href="mailto:khandakeratik43@gmail.com" title="Email">
+                    <i class="fas fa-envelope"></i>
+                </a>
+            </div>
+            <div class="copyright">
+                <p>Developed with <i class="fas fa-heart"></i> by <a href="https://khandaker-atik.vercel.app/" target="_blank">Khandaker Atik</a></p>
+                <p class="version">BitGuard Vault Cleaner v2.0</p>
+            </div>
+            <div class="back-to-top" onclick="scrollToTop()">
+                <i class="fas fa-arrow-up"></i>
+            </div>
+        </div>
+    </footer>
+
+    <div class="toast" id="toast">
+        <div class="toast-content">
+            <i class="fas fa-check-circle"></i>
+            <div class="toast-message" id="toastMessage"></div>
+        </div>
+        <div class="toast-progress" id="toastProgress"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
