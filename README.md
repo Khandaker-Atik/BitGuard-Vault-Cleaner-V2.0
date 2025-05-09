@@ -18,7 +18,7 @@
 
 ## 🚀 Live Demo
 
-Access BitGuard Vault Cleaner at: [https://bitguard-vault-cleaner.vercel.app](bitguard-vault-cleaner.vercel.app)
+Access BitGuard Vault Cleaner at: [bitguard-vault-cleaner.vercel.app]
 
 ## 📋 How to Use
 
